@@ -11,13 +11,15 @@ $app = new Slim();
 
 $app->config('debug', true);
 
-$app->get('/', function() { // Define a rota
+//Rota homepage site
+$app->get('/', function() { // Define a rota 
     
 	$page = new Page();		//Cria uma pagina de acordo com o conteúdo indicado
 	$page->setTpl("index");
 
 });
 
+//Rota homepage admin
 $app->get('/admin', function() { // Define a rota
 	
 	User::verifyLogin();
@@ -27,6 +29,7 @@ $app->get('/admin', function() { // Define a rota
 
 });
 
+//Rota login admin
 $app->get('/admin/login', function() { // Define a rota
     
 	$page = new PageAdmin([
@@ -37,16 +40,64 @@ $app->get('/admin/login', function() { // Define a rota
 
 });
 
+//Rota pra envio dos dados do login
 $app->post("/admin/login", function(){
 	User::login($_POST["login"], $_POST["password"]);
 	header("Location: /admin");
 	exit;
 });
 
+//Rota para logout
 $app->get("/admin/logout", function(){
 	User::logout();
 	header("Location: /admin/login");
 	exit;
+});
+
+//Rota para página de usuários
+$app->get("/admin/users", function(){
+	User::verifyLogin();
+	$users = User::listAll();
+	$page = new PageAdmin();
+	$page->setTpl("users", array(
+		"users"=>$users
+	));
+});
+
+//Rota para página de criar usuário
+$app->get("/admin/users/create", function(){ //Pra criar a tela
+	User::verifyLogin();
+	$page = new PageAdmin();
+	$page->setTpl("users-create");
+});
+
+//Rota para deletar um usuário
+$app->get("/admin/users/:iduser/delete", function($iduser){
+	User::verifyLogin();
+});
+
+//Rota para página alterar usuário
+$app->get("/admin/users/:iduser", function($iduser){
+	User::verifyLogin();
+	$page = new PageAdmin();
+	$page->setTpl("users-update");
+});
+
+//Para salvar a criação informação no banco de dados
+$app->post("/admin/users/create", function(){
+	User::verifyLogin();
+	$user = new User();
+	$_POST["inadmin"]=(isset($_POST["inadmin"]))?1:0;
+	$user->setData($_POST);
+	$user->save();
+	header("Location: /admin/users");
+	exit;
+});
+
+//Para alterar no banco de dados
+$app->post("/admin/users/:iduser", function($iduser){
+	User::verifyLogin();
+
 });
 
 $app->run();
