@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once("vendor/autoload.php");
 
@@ -12,8 +12,8 @@ $app = new Slim();
 $app->config('debug', true);
 
 //Rota homepage site
-$app->get('/', function() { // Define a rota 
-    
+$app->get('/', function() { // Define a rota
+
 	$page = new Page();		//Cria uma pagina de acordo com o conteúdo indicado
 	$page->setTpl("index");
 
@@ -21,7 +21,7 @@ $app->get('/', function() { // Define a rota
 
 //Rota homepage admin
 $app->get('/admin', function() { // Define a rota
-	
+
 	User::verifyLogin();
 
 	$page = new PageAdmin();		//Cria uma pagina de acordo com o conteúdo indicado
@@ -31,7 +31,7 @@ $app->get('/admin', function() { // Define a rota
 
 //Rota login admin
 $app->get('/admin/login', function() { // Define a rota
-    
+
 	$page = new PageAdmin([
 		'header'=>false,
 		'footer'=>false
@@ -74,13 +74,23 @@ $app->get("/admin/users/create", function(){ //Pra criar a tela
 //Rota para deletar um usuário
 $app->get("/admin/users/:iduser/delete", function($iduser){
 	User::verifyLogin();
+
+  $user = new User();
+  $user->get((int)$iduser);
+  $user->delete();
+  header("Location: /admin/users");
+  exit;
 });
 
 //Rota para página alterar usuário
 $app->get("/admin/users/:iduser", function($iduser){
 	User::verifyLogin();
+  $user = new User();
+  $user->get((int)$iduser);
 	$page = new PageAdmin();
-	$page->setTpl("users-update");
+	$page->setTpl("users-update", array(
+    'user'=>$user->getValues()
+  ));
 });
 
 //Para salvar a criação informação no banco de dados
@@ -98,6 +108,13 @@ $app->post("/admin/users/create", function(){
 $app->post("/admin/users/:iduser", function($iduser){
 	User::verifyLogin();
 
+  $user = new user();
+  $_POST["inadmin"]=(isset($_POST["inadmin"]))?1:0;
+  $user->get((int)$iduser);
+  $user->setData($_POST);
+  $user->update();
+  header("Location: /admin/users");
+  exit;
 });
 
 $app->run();
