@@ -5,7 +5,11 @@
     use \Hcode\Model;
 
     class User extends Model{
+      
         const SESSION = "User";
+        const SECRET_1 = 1234567890123456;
+        const SECRET_2 = 6543210987654321;
+
 
         //Função que faz o login do usuário
         public static function login($login, $password){
@@ -52,7 +56,7 @@
         }
         public static function listAll(){
             $sql = new Sql();
-            return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson");
+            return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.idperson");
         }
 
         //Função que cadastra um novo usuário no banco de dados
@@ -102,6 +106,8 @@
             ':iduser'=>$this->getiduser()
           ));
         }
+
+        //Função que recupera a senha de um determinado usuário.
         public static function getForgot($email){
           $sql = new Sql();
           $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email", array(
@@ -119,8 +125,11 @@
             if (count($results2) === 0 ) {
               throw new \Exception("Não foi possível recuperar a senha.");
             }else {
+
               $dataRecovery = $results2[0];
-              base64_encode(openssl_encrypt());
+              base64_encode(openssl_encrypt($dataRecovery["idrecovery"], 'AES-128-CBC', SECRET_1, 0, SECRET_2));
+              $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+
             }
           }
         }
