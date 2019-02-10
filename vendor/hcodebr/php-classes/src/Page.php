@@ -44,7 +44,7 @@
 
         public function __destruct(){
             if ($this->options["footer"]===true) {
-                $this->tpl->draw("footer");  
+                $this->tpl->draw("footer");
             }
         }
     }

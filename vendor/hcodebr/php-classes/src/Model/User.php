@@ -3,12 +3,14 @@
 
     use \Hcode\DB\Sql;
     use \Hcode\Model;
+    use \Hcode\Mailer;
 
     class User extends Model{
-      
+
         const SESSION = "User";
-        const SECRET_1 = 1234567890123456;
-        const SECRET_2 = 6543210987654321;
+        const SECRET = "1234567890123456";
+        const IV = "1234567890123456";
+        const METHOD = "AES-256-CBC";
 
 
         //Função que faz o login do usuário
@@ -110,10 +112,11 @@
         //Função que recupera a senha de um determinado usuário.
         public static function getForgot($email){
           $sql = new Sql();
-          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email", array(
-            ':email'=>$email
+          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email;", array(
+            ":email"=>$email
           ));
-          if (count($results === 0)) {
+
+          if ($results === 0) {
             throw new \Exception("Não foi possível recuperar a senha.");
           }else{
             $data = $results[0];
@@ -127,9 +130,14 @@
             }else {
 
               $dataRecovery = $results2[0];
-              base64_encode(openssl_encrypt($dataRecovery["idrecovery"], 'AES-128-CBC', SECRET_1, 0, SECRET_2));
+              $code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"], User::METHOD, User::SECRET, 0, User::IV));
               $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
-
+              $mailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha da Hcode Store", "forgot", array(
+                "name"=> $data["desperson"],
+                "link"=> $link
+             ));
+             $mailer->send();
+             return $data;
             }
           }
         }
