@@ -6,6 +6,7 @@ use \Slim\Slim;
 use \Hcode\Page;
 use \Hcode\PageAdmin;
 use \Hcode\Model\User;
+use \Hcode\Model\Category;
 
 $app = new Slim();
 
@@ -141,6 +142,29 @@ $app->get("/admin/forgot/sent", function(){
 		"footer"=>false
 	]);
 	$page->setTpl("forgot-sent");
+});
+
+$app->get("/admin/categories", function(){
+
+	$categories = Category::ListAll();
+
+	$page = new PageAdmin();
+	$page->setTpl("categories", [
+		'categories'=>$categories
+	]);
+});
+
+$app->get("/admin/categories/create", function(){
+
+	$page = new PageAdmin();
+	$page->setTpl("categories-create");
+});
+
+$app->post("/admin/categories/create", function(){
+	$category = new Category();
+	$category->setData($_POST);
+	$category->save();
+	header("Location: /admin/categories");
 });
 
 $app->run();

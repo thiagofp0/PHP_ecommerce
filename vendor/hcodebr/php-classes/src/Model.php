@@ -14,7 +14,7 @@
             $fieldname = substr($name, 3, strlen($name));
             switch($method){
                 case "get":
-                    return $this->values[$fieldname];
+                    return (isset($this->values[$fieldname])) ? $this->values[$fieldname] : NULL;
                 break;
 
                 case "set":
