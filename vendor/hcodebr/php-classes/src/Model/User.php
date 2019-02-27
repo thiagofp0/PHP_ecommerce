@@ -3,14 +3,12 @@
 
     use \Hcode\DB\Sql;
     use \Hcode\Model;
-    use \Hcode\Mailer;
 
     class User extends Model{
-
+      
         const SESSION = "User";
-        const SECRET = "1234567890123456";
-        const IV = "1234567890123456";
-        const METHOD = "AES-256-CBC";
+        const SECRET_1 = 1234567890123456;
+        const SECRET_2 = 6543210987654321;
 
 
         //Função que faz o login do usuário
@@ -111,13 +109,12 @@
         //Função que recupera a senha de um determinado usuário.
         public static function getForgot($email){
           $sql = new Sql();
-
-          //O email não está chegando. Possibilidades:
-          // - A verificação se existe o email no banco está falhando e está retornando o objeto
-          $results = array();
-          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email;", array(
-            ":email"=>$email
+          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email", array(
+            ':email'=>$email
           ));
+          if (count($results === 0)) {
+            throw new \Exception("Não foi possível recuperar a senha.");
+          }else{
             $data = $results[0];
             $results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
               ':iduser'=>$data["iduser"],
@@ -129,15 +126,11 @@
             }else {
 
               $dataRecovery = $results2[0];
-              $code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"], User::METHOD, User::SECRET, 0, User::IV));
+              base64_encode(openssl_encrypt($dataRecovery["idrecovery"], 'AES-128-CBC', SECRET_1, 0, SECRET_2));
               $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
-              $mailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha da Hcode Store", "forgot", array(
-                "name"=> $data["desperson"],
-                "link"=> $link
-             ));
-             $mailer->send();
-             return $data;
+
             }
           }
         }
+      }  
 ?>
