@@ -34,6 +34,8 @@
 
           //Tell PHPMailer to use SMTP
           $this->mail->isSMTP();
+          
+
 
           //Enable SMTP debugging
           // 0 = off (for production use)
@@ -46,10 +48,18 @@
           // use
           // $this->mail->Host = gethostbyname('smtp.gmail.com');
           // if your network does not support SMTP over IPv6
+          
 
           //Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
           $this->mail->Port = 587;
 
+          $this->mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
           //Set the encryption system to use - ssl (deprecated) or tls
           $this->mail->SMTPSecure = 'tls';
 
