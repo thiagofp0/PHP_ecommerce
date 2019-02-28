@@ -1,20 +1,3 @@
-Skip to content
- 
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- @thiagofp0 Sign out
-0
-0 0 thiagofp0/ecommerce
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
-ecommerce/index.php
-@thiagofp0 thiagofp0 Commit de teste
-c6a80a8  11 days ago
-173 lines (138 sloc)  3.61 KB
-    
 <?php
 session_start();
 require_once("vendor/autoload.php");
@@ -71,15 +54,17 @@ $app->get("/admin/users/create", function(){ //Pra criar a tela
 	$page = new PageAdmin();
 	$page->setTpl("users-create");
 });
+
 //Rota para deletar um usuário
-$app->get("/admin/users/:iduser/delete", function($iduser){
-	User::verifyLogin();
-  $user = new User();
-  $user->get((int)$iduser);
-  $user->delete();
-  header("Location: /admin/users");
-  exit;
+$app->get("/admin/users/:iduser/delete", function($iduser) {
+	User::verifyLogin();	
+	$user = new User();
+	$user->get((int)$iduser);
+	$user->delete();
+	header("Location: /admin/users");
+	exit;
 });
+
 //Rota para página alterar usuário
 $app->get("/admin/users/:iduser", function($iduser){
 	User::verifyLogin();
@@ -153,15 +138,4 @@ $app->post("/admin/categories/create", function(){
 });
 $app->run();
  ?>
-© 2019 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
+
