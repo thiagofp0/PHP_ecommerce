@@ -113,8 +113,7 @@
         public static function getForgot($email){
           $sql = new Sql();
 
-          //O email não está chegando. Possibilidades:
-          // - A verificação se existe o email no banco está falhando e está retornando o objeto
+          //Tem gambiarra aqui. Falta lançar um erro caso o email não conste no banco
           $results = array();
           $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email;", array(
             ":email"=>$email
@@ -139,6 +138,41 @@
              $mailer->send();
              return $data;
             }
+          }
+
+          public static function ValidForgotDecrypt($code){
+            base64_decode($code);
+
+            $idrecovery = openssl_decrypt(base64_decode($code), User::METHOD, User::SECRET, 0, User::IV);
+            $sql = new Sql();
+
+            $results = $sql->select("SELECT * FROM tb_userspasswordsrecoveries a INNER JOIN tb_users USING(iduser) INNER JOIN tb_persons c USING(idperson)
+              WHERE a.idrecovery = :idrecovery
+              AND a.dtrecovery IS NULL
+              AND DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();", array(
+                ':idrecovery'=>$idrecovery
+              ));
+
+              if(count($results) === 0){
+                throw new \Exception("Não foi possível recuperar senha!");
+              }else {
+                return $results[0];
+              }
+          }
+
+          public static function SetForgotUsed($idrecovery){
+            $sql = new Sql();
+            $sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
+              ':idrecovery'=> $idrecovery
+            ));
+          }
+
+          public function setPassword($password){
+            $sql = new Sql();
+            $sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+              ':password'=>$password,
+              ':iduser'=>$this->getiduser()
+            ));
           }
         }
 ?>
