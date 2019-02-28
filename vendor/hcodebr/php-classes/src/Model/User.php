@@ -109,10 +109,11 @@
         //Função que recupera a senha de um determinado usuário.
         public static function getForgot($email){
           $sql = new Sql();
-          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email", array(
-            ':email'=>$email
+          $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email;", array(
+            ":email"=>$email
           ));
-          if (count($results === 0)) {
+
+          if ($results === 0) {
             throw new \Exception("Não foi possível recuperar a senha.");
           }else{
             $data = $results[0];
@@ -132,5 +133,5 @@
             }
           }
         }
-      }  
+    }
 ?>
