@@ -103,7 +103,6 @@
         // Função que deleta o usuário do banco de dados
         public function delete(){
           $sql = new Sql();
-          echo "Teste";
 		      $sql->query("CALL sp_users_delete(:iduser)", array(
 			      ":iduser"=>$this->getiduser()
 		      ));

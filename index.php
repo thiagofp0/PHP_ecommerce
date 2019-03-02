@@ -107,11 +107,14 @@ $app->get("/admin/forgot", function(){
     ]);
     $page->setTpl("forgot");
 });
+//Rota que envia o formulário com o email para a função na classe user
 $app->post("/admin/forgot", function(){
   $user = User::getForgot($_POST["email"]);
 	header("Location: /admin/forgot/sent");
 	exit;
 });
+
+//Rota que chama template de confirmação de envio
 $app->get("/admin/forgot/sent", function(){
 	$page = new PageAdmin([
 		"header"=>false,
@@ -120,6 +123,7 @@ $app->get("/admin/forgot/sent", function(){
 	$page->setTpl("forgot-sent");
 });
 
+//Rota que redireciona para a página de nova senha
 $app->get("/admin/forgot/reset", function(){
 	$user = User::ValidForgotDecrypt($_GET["code"]);
 
@@ -132,7 +136,7 @@ $app->get("/admin/forgot/reset", function(){
 		'code'=>$_GET["code"]
 	));
 });
-
+//Rota que envia o formulário com a nova senha e salva no banco
 $app->post("/admin/forgot/reset", function(){
 
 	$forgot = User::ValidForgotDecrypt($_GET["code"]);
@@ -166,6 +170,26 @@ $app->post("/admin/categories/create", function(){
 	$category->setData($_POST);
 	$category->save();
 	header("Location: /admin/categories");
+	exit;
+});
+
+$app->get("/admin/categories/:idcategory/delete", function($idcategory){
+	$category = new Category();
+	$category->get((int)$idcategory);
+	$category->delete();
+	header("Location: /admin/categories");
+	exit;
+});
+$app->get("/admin/categories/:idcategory", function($idcategory){
+	$category = new Category();
+	$category->get((int)$idcategory);
+	$category->update();
+	$page = new PageAdmin();
+	$page->setTpl("categories-update", array(
+		'categories'=>$category->getValues()
+	));
+	header("Location: /admin/categories");
+	exit;
 });
 $app->run();
  ?>
