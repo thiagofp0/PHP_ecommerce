@@ -1,10 +1,17 @@
 <?php
     use \Hcode\Page;
-    use \Hcode\Model\Category;
+	use \Hcode\Model\Category;
+	use \Hcode\Model\Product;
 //Rota homepage site
 $app->get('/', function() { // Define a rota
+
+	$products = Product::ListAll();
+
 	$page = new Page();		//Cria uma pagina de acordo com o conteúdo indicado
-	$page->setTpl("index");
+
+	$page->setTpl("index", [
+		'products'=>Product::checkList($products)
+	]);
 });
 
 $app->get("/categories/:idcategory", function($idcategory){
