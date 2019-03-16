@@ -68,5 +68,20 @@
           return $result;
         }
       }
+
+      public function addProduct($idcategory, $idproduct){
+        $sql = new Sql();
+        $sql->query("INSERT INTO tb_productscategories values (:idcategory, :idproduct);", [
+          ':idcategory'=>$idcategory,
+          ':idproduct'=>$idproduct
+        ]);        
+      }
+      public function removeProduct($idcategory, $idproduct){
+        $sql = new Sql();
+        $sql->query("DELETE FROM tb_productscategories where idcategory = :idcategory and idproduct = :idproduct;", [
+          ':idcategory'=>$idcategory,
+          ':idproduct'=>$idproduct
+        ]);
+      }
     }
 ?>
