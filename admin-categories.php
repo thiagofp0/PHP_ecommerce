@@ -51,6 +51,8 @@ $app->get("/admin/categories/:idcategory", function($idcategory){
 		'category'=>$category->getValues()
 	]);	
 });
+
+//Rota que envia o formulário da edição
 $app->post("/admin/categories/:idcategory", function($idcategory){
 	User::verifyLogin();
 	$category = new Category();
@@ -59,5 +61,20 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 	$category->save();	
 	header('Location: /admin/categories');
 	exit;
+});
+
+
+//Rota que redireciona até a página de produtos por categoria
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+	User::verifyLogin();
+	$category = new Category();
+	$category->get((int)$idcategory);
+
+	$page = new PageAdmin();
+	$page->setTpl("categories-products", array(
+		'category'=>$category->getValues(),
+		'productsRelated'=>$category->getProducts(true),
+		'productsNotRelated'=>$category->getProducts(false)
+	));
 });
 ?>
