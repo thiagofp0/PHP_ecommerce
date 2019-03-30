@@ -97,7 +97,10 @@ $app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($
 	$product = new Product();
 	$product->get((int)$idproduct);
 	$category->removeProduct($idcategory, $idproduct);
-	header("Location: /admin/categories");
+	header("Location: /admin/categories");// Isso deveria ir pra mesma página. N sei como fazer isso
 	exit;
 });
+
+
+
 ?>
