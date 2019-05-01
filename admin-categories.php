@@ -86,8 +86,8 @@ $app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idc
 	$category->get((int)$idcategory);
 	$product = new Product();
 	$product->get((int)$idproduct);
-	$category->addProduct($idcategory, $idproduct);
-	header("Location: /admin/categories");
+	$category->addProduct($product);
+	header("Location: /admin/categories/".$idcategory."/products");
 	exit;
 });
 $app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
@@ -96,11 +96,9 @@ $app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($
 	$category->get((int)$idcategory);
 	$product = new Product();
 	$product->get((int)$idproduct);
-	$category->removeProduct($idcategory, $idproduct);
-	header("Location: /admin/categories");// Isso deveria ir pra mesma página. N sei como fazer isso
+	$category->removeProduct($product);
+	header("Location: /admin/categories/".$idcategory."/products");
 	exit;
 });
-
-
 
 ?>

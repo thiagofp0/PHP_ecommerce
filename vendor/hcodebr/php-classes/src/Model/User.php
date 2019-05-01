@@ -7,6 +7,7 @@
 
     class User extends Model{
 
+        //const KEY = bin2hex(random_bytes(32));
         const SESSION = "User";
         const SECRET = "1234567890123456";
         const IV = "1234567890123456";
@@ -111,6 +112,7 @@
         //Função que recupera a senha de um determinado usuário.
         public static function getForgot($email){
           $sql = new Sql();
+          $output = false;
 
           //Tem gambiarra aqui. Falta lançar um erro caso o email não conste no banco
           $results = array();
@@ -128,6 +130,8 @@
             }else {
 
               $dataRecovery = $results2[0];
+              //$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(User::METHOD));
+              //$code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"], User::METHOD, User::KEY, 0, $iv))
               $code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"], User::METHOD, User::SECRET, 0, User::IV));
               $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
               $mailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha da Hcode Store", "forgot", array(
@@ -138,7 +142,6 @@
              return $data;
             }
           }
-
           public static function ValidForgotDecrypt($code){
             base64_decode($code);
 

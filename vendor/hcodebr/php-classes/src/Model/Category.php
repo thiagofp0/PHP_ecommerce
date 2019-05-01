@@ -69,18 +69,18 @@
         }
       }
 
-      public function addProduct($idcategory, $idproduct){
+      public function addProduct(Product $product){
         $sql = new Sql();
         $sql->query("INSERT INTO tb_productscategories values (:idcategory, :idproduct);", [
-          ':idcategory'=>$idcategory,
-          ':idproduct'=>$idproduct
+          ':idcategory'=>$this->getidcategory(),
+          ':idproduct'=>$product->getidproduct()
         ]);        
       }
-      public function removeProduct($idcategory, $idproduct){
+      public function removeProduct(Product $product){
         $sql = new Sql();
         $sql->query("DELETE FROM tb_productscategories where idcategory = :idcategory and idproduct = :idproduct;", [
-          ':idcategory'=>$idcategory,
-          ':idproduct'=>$idproduct
+          ':idcategory'=>$this->getidcategory(),
+          ':idproduct'=>$product->getidproduct()
         ]);
       }
     }
